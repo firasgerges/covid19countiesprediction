@@ -1,0 +1,6 @@
+Population: Population of the county
+Education Att.: Percentage of people 25 years or older having a high school degree or higher
+Unemployment Rate: Rate of unemployment
+Sex Ratio (male to 100 female):
+Median Age:
+Commute via Public transportation: Go to work via public transportation excluding taxicab
