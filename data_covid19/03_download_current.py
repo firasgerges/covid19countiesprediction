@@ -31,3 +31,27 @@ print(f"NY Counties: {'|'.join(ny_counties)}\n")
 print(df_ny_county)
 
 df_ny_county.to_csv('ny_county_confirmed_cases_20200326_1400h_UTC.csv')
+
+df_Mar23to25 = pd.read_excel('../covid counties/data.xlsx')
+df_Mar23to25 = df_Mar23to25.set_index('County')
+
+df_Mar26 = df_ny_county[['County', 'Cases']].copy()
+df_Mar26.columns = ['County', '2020-03-26 00:00:00']
+df_Mar26 = df_Mar26.set_index('County')
+
+print('----- Datasets before merge -----')
+print(df_Mar23to25.shape)
+print(df_Mar23to25.head(10).T)
+
+print(df_Mar26.shape)
+print(df_Mar26.head(10).T)
+
+print('----- Merged dataset -----')
+
+df_Mar23to26 = pd.concat(
+    (df_Mar23to25.T, df_Mar26.T), axis=0, sort=True)
+
+df_Mar23to26.index = pd.to_datetime(df_Mar23to26.index)
+print(df_Mar23to26.iloc[:5, :10])
+
+df_Mar23to26.to_csv('ny_county_confirmed_Mar23to26_2020.csv')
