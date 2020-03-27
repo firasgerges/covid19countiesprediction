@@ -4,7 +4,7 @@ import pandas as pd
 import warnings
 
 from sklearn import datasets, linear_model, svm
-from sklearn.ensemble import RandomForestRegressor
+from sklearn.ensemble import GradientBoostingRegressor, RandomForestRegressor
 from sklearn.model_selection import KFold
 from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
 
@@ -15,6 +15,7 @@ models = {
     'linear': linear_model.LinearRegression(),
     'logistic': linear_model.LogisticRegression(),
     'svr': svm.SVR(),
+    'gbr': GradientBoostingRegressor(),
     'rf': RandomForestRegressor(n_estimators=100, criterion='mse')
 }
 
