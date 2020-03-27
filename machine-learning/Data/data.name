@@ -1,0 +1,14 @@
+Reg
+Density: continuous
+Education: continuous
+Unemployment: continuous
+Sex_Ratio: continuous
+Age_Median: continuous
+Public_Transportation: continuous
+Infecion_Rate: continuous
+Infecion_Density: continuous
+Average_Increase: continuous
+Covid1: continuous
+Covid2: continuous
+Covid3: continuous
+Covid4: continuous
