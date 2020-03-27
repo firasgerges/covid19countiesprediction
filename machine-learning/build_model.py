@@ -1,11 +1,14 @@
 #!/usr/bin/env python
 
 import pandas as pd
+import warnings
 
 from sklearn import datasets, linear_model, svm
 from sklearn.model_selection import KFold
 from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
 
+
+warnings.filterwarnings('ignore')
 
 models = {
     'linear': linear_model.LinearRegression(),
