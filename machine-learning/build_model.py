@@ -68,6 +68,12 @@ if __name__ == "__main__":
     cols = ['fold', 'method'] + list(scores.keys())
     df = df[cols]
 
-    print('----- Results -----')
+    print('----- results.csv -----')
     print(df)
     df.to_csv('results.csv')
+
+    # Summarize the results by taking the mean across all the k-folds
+    print('----- summary.csv -----')
+    df_summary = df.groupby('method').agg({'MSE': 'mean', 'MAE': 'mean', 'r2': 'mean'})
+    print(df_summary)
+    df_summary.to_csv('summary.csv')
