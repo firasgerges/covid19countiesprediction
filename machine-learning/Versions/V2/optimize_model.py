@@ -17,12 +17,20 @@ from sklearn.metrics import mean_squared_error
 warnings.filterwarnings('ignore')
 
 
-# Search space for hyperparameter optimization
-space = {
+# Search spaces for hyperparameter optimization
+space_svr = {
     # 'kernel': hyperopt.hp.choice('kernel', ['rbf']),  # 'linear', 'sigmoid', 'poly', 'rbf']
     'C': hyperopt.hp.lognormal('C', 0.0, 2.0),
     'epsilon': hyperopt.hp.uniform('epsilon', 0.01, 0.8),
     'gamma': hyperopt.hp.uniform('gamma', 0, 20)
+}
+
+space_lasso = {
+    'alpha': hyperopt.hp.uniform('alpha', 0.01, 10.0),
+}
+
+space_ridge = {
+    'alpha': hyperopt.hp.uniform('alpha', 0.01, 10.0),
 }
 
 
@@ -55,12 +63,22 @@ def kfold_score(model, X, y, n_splits=10):
     return np.mean(results)
 
 
-def fn_to_optimize(params, X, y, **kwargs):
+def lasso_kfold_score(params, X, y, **kwargs):
+    model = linear_model.Lasso(**params)
+    return kfold_score(model, X, y, **kwargs)
+
+
+def ridge_kfold_score(params, X, y, **kwargs):
+    model = linear_model.Ridge(**params)
+    return kfold_score(model, X, y, **kwargs)
+
+
+def svr_kfold_score(params, X, y, **kwargs):
     model = svm.SVR(**params)
     return kfold_score(model, X, y, **kwargs)
 
 
-def optimize(space, X, y, max_evals=10):
+def optimize(space, fn_to_optimize, X, y, max_evals=10):
     trials = hyperopt.Trials()
 
     result = hyperopt.fmin(
@@ -87,21 +105,30 @@ def run_once(X, y, C=1.0, epsilon=0.1, **kwargs):
         'C': C,
         'epsilon': epsilon
     }
-    return fn_to_optimize(params, X, y)
+    return svr_kfold_score(params, X, y)
 
 
 if __name__ == "__main__":
     X, y = load_xy('main_data.xlsx')
-    rmse = run_once(X, y, n_folds=10)
-    print(rmse)
+    # rmse = run_once(X, y, n_folds=10)
+    # print(rmse)
 
-    r = optimize(space, X, y, max_evals=50)
+    # Lasso: loss = 6788.334200834708, alpha = 9.98566851385465
+    # Ridge: loss = 19380.769436064813, alpha = 0.10915209548637361
+    # SVR: loss = 6302.334970416805, C = 90.73680833133838, epsilon = 0.7047413056425894, gamma = 15.157706042831762
+    r = optimize(
+        # space_lasso, lasso_kfold_score,
+        # space_ridge, ridge_kfold_score,
+        space_svr, svr_kfold_score,
+        X, y, max_evals=50)
     df = r['df']
     result = r['result']
     trials = r['trials']
     print(df)
+    df_best = df.sort_values('loss', ascending=True).iloc[0, :]
+    loss = df_best['loss']
 
-    print("----- Final optimized parameters -----")
+    print(f"----- Final optimized parameters (loss = {loss}) -----")
     json_str = json.dumps(result, indent=2)
     print(json_str)
 
