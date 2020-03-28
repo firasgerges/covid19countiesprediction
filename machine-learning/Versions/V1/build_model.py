@@ -18,11 +18,7 @@ models = {
     'dtr': DecisionTreeRegressor(),
     'linear': linear_model.LinearRegression(),
     'logistic': linear_model.LogisticRegression(),
-    # 'knr': KNeighborsRegressor(),
     'svr': svm.SVR(),
-    'svr_rbf': svm.SVR(kernel='rbf', C=100, gamma=0.1, epsilon=.1),
-    # 'svr_lin': svm.SVR(kernel='linear', C=100, gamma='auto'),
-    # 'svr_poly': svm.SVR(kernel='poly', C=100, gamma='auto', degree=3, epsilon=.1, coef0=1),
     'gbr': GradientBoostingRegressor(),
     'rf': RandomForestRegressor(n_estimators=100, criterion='mse')
 }
@@ -80,7 +76,7 @@ def create_single_model(model_name):
 
 
 if __name__ == "__main__":
-    X, y = load_xy('../main_data.xlsx')
+    X, y = load_xy('main_data.xlsx')
     df = run_kfold(X, y, 10)
 
     cols = ['fold', 'method'] + list(scores.keys())
@@ -88,15 +84,15 @@ if __name__ == "__main__":
 
     print('----- results.csv -----')
     print(df)
-    df.to_csv('Results/results.csv')
+    df.to_csv('results.csv')
 
     # Summarize the results by taking the mean across all the k-folds
     print('----- summary.csv -----')
     df_summary = df.groupby('method').agg({'MSE': 'mean', 'MAE': 'mean', 'r2': 'mean'})
     print(df_summary)
-    df_summary.to_csv('Results/summary.csv')
+    df_summary.to_csv('summary.csv')
     df_summary = df_summary.sort_values('MSE', ascending=True)
-    df_summary.to_excel('Results/summary.xlsx')
+    df_summary.to_excel('summary.xlsx')
 
     best_model = df_summary.index[0]
     create_single_model(best_model)
