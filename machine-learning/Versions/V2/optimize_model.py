@@ -19,8 +19,10 @@ warnings.filterwarnings('ignore')
 
 # Search space for hyperparameter optimization
 space = {
-    'C': hyperopt.hp.lognormal('C', 0.0, 1.0),
-    'epsilon': hyperopt.hp.uniform('epsilon', 0.01, 0.8)
+    # 'kernel': hyperopt.hp.choice('kernel', ['rbf']),  # 'linear', 'sigmoid', 'poly', 'rbf']
+    'C': hyperopt.hp.lognormal('C', 0.0, 2.0),
+    'epsilon': hyperopt.hp.uniform('epsilon', 0.01, 0.8),
+    'gamma': hyperopt.hp.uniform('gamma', 0, 20)
 }
 
 
@@ -54,11 +56,7 @@ def kfold_score(model, X, y, n_splits=10):
 
 
 def fn_to_optimize(params, X, y, **kwargs):
-    model = svm.SVR(
-        gamma='scale',
-        C=params['C'],
-        epsilon=params['epsilon']
-    )
+    model = svm.SVR(**params)
     return kfold_score(model, X, y, **kwargs)
 
 

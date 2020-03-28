@@ -30,7 +30,11 @@ models = {
 
 #-------------------------------------------------------------------------
 
-models = {'svr': svm.SVR(gamma='scale', C=1.0, epsilon=0.2)}
+models = {
+    'svr': svm.SVR(gamma='scale', C=1.0, epsilon=0.2),
+    'svr_opt1': svm.SVR(gamma='scale', C=0.17654433034967923, epsilon=0.06953152985642766),  # Optimized models
+    'svr_opt2': svm.SVR(gamma=15.157706042831762, C=90.73680833133838, epsilon=0.7047413056425894)
+}
 
 scores = {
     'MSE': mean_squared_error,
