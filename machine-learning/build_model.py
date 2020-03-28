@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import pandas as pd
+import pickle
 import warnings
 
 from sklearn import datasets, linear_model, svm
@@ -65,6 +66,16 @@ def run_kfold(X, y, n_splits=10):
     return pd.DataFrame(results)
 
 
+def create_single_model(model_name):
+    model = models[model_name]
+    obj = model.fit(X, y)
+
+    filename = f'{model_name}.pickle'
+    with open(filename, 'wb') as f:
+        pickle.dump(obj, f)
+    print(f'Saved: {filename}')
+
+
 if __name__ == "__main__":
     X, y = load_xy('../main_data.xlsx')
     df = run_kfold(X, y, 10)
@@ -81,4 +92,8 @@ if __name__ == "__main__":
     df_summary = df.groupby('method').agg({'MSE': 'mean', 'MAE': 'mean', 'r2': 'mean'})
     print(df_summary)
     df_summary.to_csv('summary.csv')
-    df_summary.sort_values('MSE', ascending=True).to_excel('summary.xlsx')
+    df_summary = df_summary.sort_values('MSE', ascending=True)
+    df_summary.to_excel('summary.xlsx')
+
+    best_model = df_summary.index[0]
+    create_single_model(best_model)
