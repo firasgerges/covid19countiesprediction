@@ -88,10 +88,14 @@ if __name__ == "__main__":
 
     # Summarize the results by taking the mean across all the k-folds
     print('----- summary.csv -----')
-    df_summary = df.groupby('method').agg({'MSE': 'mean', 'MAE': 'mean', 'r2': 'mean'})
+    df_summary = df.groupby('method').agg({
+        'MSE': ['mean', 'std'],
+        'MAE': ['mean', 'std'],
+        'r2': ['mean', 'std']
+    })
     print(df_summary)
     df_summary.to_csv('summary.csv')
-    df_summary = df_summary.sort_values('MSE', ascending=True)
+    df_summary = df_summary.sort_values(('MSE', 'mean'), ascending=True)
     df_summary.to_excel('summary.xlsx')
 
     best_model = df_summary.index[0]
