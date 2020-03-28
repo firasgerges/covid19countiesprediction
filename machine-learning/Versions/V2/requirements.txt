@@ -1,3 +1,5 @@
+hyperopt
+matplotlib
 openpyxl
 pandas
 sklearn

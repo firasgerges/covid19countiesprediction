@@ -18,6 +18,9 @@ from sklearn import preprocessing
 
 warnings.filterwarnings('ignore')
 
+# Whether to use the standard scaler by default
+USE_STANDARD_SCALER=True
+
 
 # Search spaces for hyperparameter optimization
 space_svr = {
@@ -43,7 +46,7 @@ def load_xy(filename):
     return X.values, y.values
 
 
-def evaluate(model, X_train, y_train, X_test, y_test, use_scaler=True, return_ypred=False):
+def evaluate(model, X_train, y_train, X_test, y_test, use_scaler=USE_STANDARD_SCALER, return_ypred=False):
     """
     Returns the mean squared error of the model, as evaluated against the test set
     `_s` suffix is the Standard Scaler version of the same name
