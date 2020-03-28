@@ -5,6 +5,8 @@ from sklearn.ensemble import RandomForestRegressor
 from sklearn.ensemble import GradientBoostingRegressor
 from sklearn.tree import DecisionTreeRegressor
 from sklearn.linear_model import LinearRegression
+import pickle
+
 import math
 import numpy as np
 class Classifier(object):
@@ -53,6 +55,8 @@ class Classifier(object):
 		if self.ml=='SVR':
 			clf =SVR(gamma='scale', C=1.0, epsilon=0.2)
 		clf.fit(Tr,TrC);
+		filename = 'ml_model.sav'
+		pickle.dump(clf, open(filename, 'wb'),protocol=2)
 		print(ml,Arguments,'status: ', 'Fitting Done');
 		print(ml,Arguments,'status: ', 'Training Set Prediction Started');
 		for i in Tr:
@@ -60,7 +64,7 @@ class Classifier(object):
 		print(ml,Arguments,'status: ', 'Training Set Prediction Done');
 		print(ml,Arguments,'status: ', 'Testing Set Prediction Started');
 		for i in Te:
-			self.TestPrediction.append(clf.predict([i])[0]);
+			self.TestPrediction.append(int(clf.predict([i])[0]));
 		print(ml,Arguments,'status: ', 'Testing Set Prediction Done');
 
 		return True;
@@ -74,10 +78,11 @@ class Classifier(object):
 		if type=='TEST':
 			actual=self.TestActual;
 			predicted=self.TestPrediction
-		writer=open(type+"_"+str(id)+".csv",'w');
-		for i in range(0,len(actual)):
-			writer.write(str(float(actual[i]))+","+str(float(predicted[i])));
-			writer.write("\n");
+		#writer=open(type+"_"+str(id)+".csv",'w');
+		#for i in range(0,len(actual)):
+		#	writer.write(str(float(actual[i]))+","+str(float(predicted[i])));
+		#	writer.write("\n");
+		#writer.close();
 		RMSE=0;
 		for i in range(0,len(actual)):
 			RMSE = RMSE+ pow((float(actual[i]) - float(predicted[i])),2)

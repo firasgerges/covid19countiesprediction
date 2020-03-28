@@ -1,0 +1,45 @@
+Functions Needed:
+
+	ScribeDailyCovid():
+		Everyday, get the new number of cases for each county and add data to covid_timeseries
+
+	AutoRunModel():
+		This might be triggered by the ScribeDailyCovid(). Once we have the latest data run the model to perform next day prediction
+		Save prediction in covid_prediction with next day date
+	
+	GetPredictions():
+		triggered by an api call to get the latest prediction for each county as json
+
+	RunML():
+		This will be called by the AutoRunModel() for each county
+		It takes as argument the needed data to predict using the machine learning model
+		it returns the prediction
+		Input:
+			density 
+			education
+			unemployment
+			sex_ratio
+			age_median
+			public_commute
+			infection_rate
+			infection_density
+			average_increase
+			covid1
+			covid2
+			covid3
+			covid4
+		example: 570.74 92.6 5.3 93.7 37.8 5.867008492 0.000499665 0.285178236 21 88 127 146 152
+
+		The machine learning model does not take county identifier as it uses the attributes to perfrom prediction.
+		We Map the prediction to the county on the parent function (AutoRunModel)
+
+		density=population/are
+		infection_rate=covid4/population (rounded to nearest integer)
+		indection_density=covid4/area (rounded to nearest integer)
+		average increase= Average daily covid number increase = 
+							(((covid2-covid1)/covid1) * 100 + ((covid3-covid2)/covid2) * 100 + ((covid4-covid3)/covid3) * 100)/3
+		covid1=total number of cases from 3 days
+		covid2=total number of cases from 2 days
+		covid3=total number of cases from 1 days
+		covid4=total number of cases today
+		** so basically covid1-4 are the total cases reported by the end of each day druing the last 4 days (last 3 days + today)

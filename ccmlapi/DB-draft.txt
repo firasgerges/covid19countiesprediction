@@ -1,0 +1,25 @@
+The main aim of the DB is to host counties data and covid timeseries
+liliusmed
+Three tables:
+	county:
+		id
+		name
+		population
+		area
+		education
+		unemployment
+		sex_ratio
+		age_median
+		public_commute
+
+	covid_timeseries:
+		id
+		county_id
+		date
+		cases
+
+	covid_prediction
+		id
+		county_id
+		date
+		cases

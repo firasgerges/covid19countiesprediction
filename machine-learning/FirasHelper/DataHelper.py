@@ -52,9 +52,9 @@ class DataHelper(object):
 					sub_attributes=list(self.Attributes[i].sub_attributes);
 					sub_attributes[attribute_index]=1;
 					for sub in sub_attributes:
-						case.append(int(sub));
+						case.append(float(sub));
 				else:
-					case.append(int(value));
+					case.append(float(value));
 			class_label_value=line[-1].strip(' ');
 			class_label_value=class_label_value.strip('.');
 			case.append(class_label_value);

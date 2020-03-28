@@ -12,7 +12,6 @@ result_extension='.csv';
 first_fold=0;
 last_fold=9;
 runs=[
-	{'method':'SVR', 'arguments':{},'id':1},
 	{'method':'LR', 'arguments':{},'id':1},
 ];
 
@@ -36,6 +35,7 @@ for i in range(0,len(runs)):
 		id_fold=run['method']+"_fold_"+str(f);
 		result['trainAcc']=classifier.computeRMSE('TRAIN',id_fold);
 		result['testAcc']=classifier.computeRMSE('TEST',id_fold);
+		print(result['testAcc'])
 		line=str(result['train'])+','+str(result['test'])+','+str(result['method'])+','+str(id)+','+str(result['trainAcc'])+','+str(result['testAcc']);
 		writer.write(line+'\n');
 	writer.close();
