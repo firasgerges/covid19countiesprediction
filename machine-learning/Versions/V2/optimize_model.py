@@ -13,6 +13,7 @@ from functools import partial
 from sklearn import datasets, linear_model, svm
 from sklearn.model_selection import KFold
 from sklearn.metrics import mean_squared_error
+from sklearn import preprocessing
 
 warnings.filterwarnings('ignore')
 
@@ -44,7 +45,9 @@ def load_xy(filename):
 def evaluate(model, X_train, y_train, X_test, y_test):
     #lab_enc = preprocessing.LabelEncoder()
     #encoded = lab_enc.fit_transform(y_train)
-    obj = model.fit(X_train, y_train)
+    scaler = preprocessing.StandardScaler(with_mean=False)
+    y_train2 = scaler.fit_transform(y_train.reshape(-1,1)).flatten()
+    obj = model.fit(X_train, y_train2)
     y_pred = obj.predict(X_test)
 
     return mean_squared_error(y_test, y_pred)
@@ -113,9 +116,14 @@ if __name__ == "__main__":
     # rmse = run_once(X, y, n_folds=10)
     # print(rmse)
 
+    # ----- Without Standard Scaler -----
     # Lasso: loss = 6788.334200834708, alpha = 9.98566851385465
     # Ridge: loss = 19380.769436064813, alpha = 0.10915209548637361
     # SVR: loss = 6302.334970416805, C = 90.73680833133838, epsilon = 0.7047413056425894, gamma = 15.157706042831762
+    # ----- With Standard Scaler -----
+    # Lasso: loss = 7209.767962831761, alpha = 9.98566851385465
+    # Ridge: loss = 7219.562378345329, alpha = 0.03878528950896436
+    # SVR: loss = 7174.496224080811, C = 10.37481045626805, epsilon = 0.798238205287856, gamma = 16.865197918193665
     r = optimize(
         # space_lasso, lasso_kfold_score,
         # space_ridge, ridge_kfold_score,

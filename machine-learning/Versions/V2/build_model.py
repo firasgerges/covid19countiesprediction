@@ -52,7 +52,9 @@ def load_xy(filename):
 def evaluate(model, X_train, y_train, X_test, y_test, scores):
     #lab_enc = preprocessing.LabelEncoder()
     #encoded = lab_enc.fit_transform(y_train)
-    obj = model.fit(X_train, y_train)
+    scaler = preprocessing.StandardScaler(with_mean=False)
+    y_train2 = scaler.fit_transform(y_train.reshape(-1,1)).flatten()
+    obj = model.fit(X_train, y_train2)
     y_pred = obj.predict(X_test)
 
     results = {}
