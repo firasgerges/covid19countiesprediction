@@ -81,3 +81,4 @@ if __name__ == "__main__":
     df_summary = df.groupby('method').agg({'MSE': 'mean', 'MAE': 'mean', 'r2': 'mean'})
     print(df_summary)
     df_summary.to_csv('summary.csv')
+    df_summary.sort_values('MSE', ascending=True).to_excel('summary.xlsx')
