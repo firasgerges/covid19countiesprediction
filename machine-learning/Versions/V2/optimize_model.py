@@ -5,13 +5,14 @@
 import hyperopt
 import json
 import numpy as np
+import matplotlib.pyplot as plt
 import pandas as pd
 import pickle
 import warnings
 
 from functools import partial
 from sklearn import datasets, linear_model, svm
-from sklearn.model_selection import KFold
+from sklearn.model_selection import KFold, train_test_split
 from sklearn.metrics import mean_squared_error
 from sklearn import preprocessing
 
@@ -42,15 +43,29 @@ def load_xy(filename):
     return X.values, y.values
 
 
-def evaluate(model, X_train, y_train, X_test, y_test):
+def evaluate(model, X_train, y_train, X_test, y_test, use_scaler=True, return_ypred=False):
+    """
+    Returns the mean squared error of the model, as evaluated against the test set
+    `_s` suffix is the Standard Scaler version of the same name
+    """
     #lab_enc = preprocessing.LabelEncoder()
     #encoded = lab_enc.fit_transform(y_train)
-    scaler = preprocessing.StandardScaler(with_mean=False)
-    y_train2 = scaler.fit_transform(y_train.reshape(-1,1)).flatten()
-    obj = model.fit(X_train, y_train2)
-    y_pred = obj.predict(X_test)
+    if use_scaler is True:
+        scaler = preprocessing.StandardScaler(with_mean=False)
+        y_train_s = scaler.fit_transform(y_train.reshape(-1,1)).flatten()
+        y_test_s = scaler.transform(y_test.reshape(-1,1)).flatten()
 
-    return mean_squared_error(y_test, y_pred)
+        obj = model.fit(X_train, y_train_s)
+        y_pred_s = obj.predict(X_test)
+        y_pred = scaler.inverse_transform(y_pred_s).flatten()
+    else:
+        obj = model.fit(X_train, y_train)
+        y_pred = obj.predict(X_test)
+
+    if return_ypred is True:
+        return y_pred
+    else:
+        return mean_squared_error(y_test, y_pred)
 
 
 def kfold_score(model, X, y, n_splits=10):
@@ -111,6 +126,27 @@ def run_once(X, y, C=1.0, epsilon=0.1, **kwargs):
     return svr_kfold_score(params, X, y)
 
 
+def check_optimized(model, X, y):
+    """
+    Build model with the optimized parameters, make a prediction,
+    and compare the results
+    """
+    X_train, X_test, y_train, y_test = train_test_split(
+         X, y, test_size=0.2, random_state=12345)
+    y_pred = evaluate(model, X_train, y_train, X_test, y_test, return_ypred=True)
+    fig, ax = plt.subplots(1, 1, figsize=(8, 7))
+    ax.plot(y_test, y_pred, 'x')
+    ax.plot(y_test, y_test, '--')
+    ax.set_xlabel('Actual')
+    ax.set_ylabel('Predictied')
+    plt.savefig('check_optimized.png')
+    df = pd.DataFrame({
+        'Actual': y_test,
+        'Predicted': y_pred
+    })
+    return df
+
+
 if __name__ == "__main__":
     X, y = load_xy('main_data.xlsx')
     # rmse = run_once(X, y, n_folds=10)
@@ -143,3 +179,6 @@ if __name__ == "__main__":
     with open('optimized_parameters.json', 'w') as f:
         f.write(json_str)
         print('Saved optimized_parameters.json')
+
+    df_check = check_optimized(svm.SVR(**result), X, y)
+    print(df_check)

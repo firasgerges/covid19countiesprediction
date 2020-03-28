@@ -49,13 +49,21 @@ def load_xy(filename):
     return X.values, y.values
 
 
-def evaluate(model, X_train, y_train, X_test, y_test, scores):
+def evaluate(model, X_train, y_train, X_test, y_test, scores, use_scaler=True):
     #lab_enc = preprocessing.LabelEncoder()
     #encoded = lab_enc.fit_transform(y_train)
-    scaler = preprocessing.StandardScaler(with_mean=False)
-    y_train2 = scaler.fit_transform(y_train.reshape(-1,1)).flatten()
-    obj = model.fit(X_train, y_train2)
-    y_pred = obj.predict(X_test)
+
+    if use_scaler is True:
+        scaler = preprocessing.StandardScaler(with_mean=False)
+        y_train_s = scaler.fit_transform(y_train.reshape(-1,1)).flatten()
+        y_test_s = scaler.transform(y_test.reshape(-1,1)).flatten()
+
+        obj = model.fit(X_train, y_train_s)
+        y_pred_s = obj.predict(X_test)
+        y_pred = scaler.inverse_transform(y_pred_s).flatten()
+    else:
+        obj = model.fit(X_train, y_train)
+        y_pred = obj.predict(X_test)
 
     results = {}
     for score_name, score_fn in scores.items():
@@ -72,7 +80,7 @@ def run_kfold(X, y, n_splits=10):
         for i, (train_index, test_index) in enumerate(kf.split(X)):
             X_train, X_test = X[train_index], X[test_index]
             y_train, y_test = y[train_index], y[test_index]
-            temp_results = evaluate(model, X_train, y_train, X_test, y_test, scores)
+            temp_results = evaluate(model, X_train, y_train, X_test, y_test, scores, use_scaler=True)
             print(f"Fold = {i}: {temp_results}")
 
             temp_results['method'] = model_name
