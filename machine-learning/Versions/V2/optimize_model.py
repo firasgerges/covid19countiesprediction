@@ -103,4 +103,9 @@ if __name__ == "__main__":
     print(df)
 
     print("----- Final optimized parameters -----")
-    print(json.dumps(result, indent=2))
+    json_str = json.dumps(result, indent=2)
+    print(json_str)
+
+    with open('optimized_parameters.json', 'w') as f:
+        f.write(json_str)
+        print('Saved optimized_parameters.json')
